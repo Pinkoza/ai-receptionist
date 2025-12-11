@@ -20,10 +20,21 @@ const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_A
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // Google Sheets setup
-const auth = new google.auth.GoogleAuth({
-  keyFile: process.env.GOOGLE_CREDENTIALS_PATH || './credentials.json',
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
+let auth;
+
+if (process.env.GOOGLE_CREDENTIALS) {
+  // If credentials are passed as env variable
+  auth = new google.auth.GoogleAuth({
+    credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS),
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+} else {
+  // If credentials are in a file
+  auth = new google.auth.GoogleAuth({
+    keyFile: process.env.GOOGLE_CREDENTIALS_PATH || './credentials.json',
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+}
 
 const sheets = google.sheets({ version: 'v4', auth });
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
