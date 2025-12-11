@@ -139,13 +139,16 @@ app.post('/voice', async (req, res) => {
 
   // Gather speech input
   const gather = twiml.gather({
+    input: 'speech',
     speechTimeout: 'auto',
     action: `/handle-input?CallSid=${CallSid}&ClientID=${ClientID}`,
     method: 'POST',
-    timeout: 3,
+    timeout: 5,
+    numDigits: 0,
   });
 
   gather.say(config.Greeting);
+  gather.say("Please tell me how I can help you.");
 
   res.type('text/xml').send(twiml.toString());
 });
@@ -205,10 +208,12 @@ app.post('/handle-input', async (req, res) => {
     } else {
       // Continue conversation
       const gather = twiml.gather({
+        input: 'speech',
         speechTimeout: 'auto',
         action: `/handle-input?CallSid=${CallSid}&ClientID=${ClientID}`,
         method: 'POST',
-        timeout: 3,
+        timeout: 5,
+        numDigits: 0,
       });
       gather.say(aiMessage);
     }
